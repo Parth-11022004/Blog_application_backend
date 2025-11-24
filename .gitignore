@@ -1,0 +1,40 @@
+# Virtual environment
+.venv/
+env/
+venv/
+
+# Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Editor and OS specific files
+.DS_Store
+.vscode/
+*.swp
+*~
+
+# Instance folder (if used for configuration or uploads)
+instance/
+
+# Database files (if local, e.g., SQLite)
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+
+# Environment variables
+.env
+.flaskenv
+
+# Uploaded files (if stored locally)
+uploads/
+
+# Build artifacts (if applicable)
+dist/
+build/
+
+todo.txt
