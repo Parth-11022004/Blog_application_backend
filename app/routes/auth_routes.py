@@ -1,38 +1,33 @@
 from flask import Blueprint, request, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
-from app.database.user_queries import insert_registration_data, get_user_by_email
+
+from app.schemas.user import UserLoginSchema, UserRegisterSchema, UserOut
+from app.services.user_service import UserService
 
 auth_bp = Blueprint("auth_bp", __name__)
 
+
 @auth_bp.post("/signup")
 def signup():
-    data = request.get_json()
-    name, username, email, password = (
-        data.get("name"),
-        data.get("username"),
-        data.get("email"),
-        data.get("password")
-    )
 
-    if not all([name, username, email, password]):
-        return jsonify({"error": "Missing required fields"}), 400
-
-    password_hash = generate_password_hash(password)
-    if not insert_registration_data(name, username, email, password_hash):
-        return jsonify({"error": "Email or username exists"}), 409
-
-    return jsonify({"message": "User registered successfully"}), 201
+    data = UserRegisterSchema.model_validate(request.get_json())
+    try:
+        user = UserService.register_user(data)
+    except ValueError as e:
+        return jsonify({"error":e}), 409
+    else:
+        return jsonify({"message": "User registered successfully", "user": UserOut.model_validate(user).model_dump()}), 201
 
 
 @auth_bp.post("/login")
 def login():
-    data = request.get_json()
-    email, password = data.get("email"), data.get("password")
+    data = UserLoginSchema.model_validate(request.get_json())
 
-    user = get_user_by_email(email)
-    if not user or not check_password_hash(user["password"], password):
+    user = UserService.authenticate_user(data.email, data.password)
+    if not user:
         return jsonify({"error": "Invalid credentials"}), 401
 
-    token = create_access_token(identity=str(user["id"]))
+    token = create_access_token(identity=str(user.id))
+
     return jsonify({"access_token": token}), 200
+
