@@ -17,3 +17,11 @@ class User(Base):
     comments = relationship("Comment", back_populates="user", cascade="all, delete")
     likes = relationship("Like", back_populates="user", cascade="all, delete")
 
+    def to_dict(self):
+        data = {
+            "id":self.id,
+            "name":self.name,
+            "username":self.username,
+            "email":self.email
+        }
+        return data

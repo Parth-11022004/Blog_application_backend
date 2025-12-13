@@ -15,12 +15,14 @@ class PostService:
     @staticmethod
     def get_post(post_id: int):
         post = PostRepository.get_by_id(post_id)
-        return post.to_dict(detailed=True) if post else None
+        if not post:
+            return None, "Post not found"
+        return post.to_dict(detailed=True), None
 
     @staticmethod
     def create_post(user_id: int, data):
         if not CategoryRepository.get_by_id(data.category_id):
-            raise ValueError("Category does not exist")
+            return None , "Category does not exist"
 
         post = Post(
             title=data.title,
@@ -32,7 +34,7 @@ class PostService:
         )
 
         post = PostRepository.create(post)
-        return post.to_dict(detailed=True)
+        return post.to_dict(detailed=True), None
 
     @staticmethod
     def get_user_posts(user_id: int):
@@ -41,8 +43,6 @@ class PostService:
     
     def get_by_category(category_id: int):
         posts = PostRepository.get_by_category(category_id)
-        if not posts:
-            return None
         return [p.to_dict(detailed=False) for p in posts]
 
     @staticmethod

@@ -26,17 +26,17 @@ class Post(Base):
             "title": self.title,
             "subtitle": self.subtitle,
             "posted_at": self.posted_at,
-            "user_id": self.user_id,
             "category_id": self.category_id,
             "author": {
-                "name":self.user.name if self.user else None
+                "id": self.user_id,
+                "name":self.user.name
             },
-            "category": self.category.name if self.category else None
+            "category": self.category.name
         }
 
         if detailed:
             data["body"] = self.body
-            data["author"]["email"] = self.user.email if self.user else None
+            data["author"]["email"] = self.user.email
 
         return data
 

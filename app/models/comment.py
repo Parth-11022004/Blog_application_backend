@@ -15,3 +15,19 @@ class Comment(Base):
 
     user = relationship("User", back_populates="comments")
     post = relationship("Post", back_populates="comments")
+
+    def to_dict(self, detailed=False):
+        data = {
+            "id":self.id,
+            "body":self.body,
+            "posted_at": self.posted_at,
+            "post_id":self.post_id,
+            "user": {
+                "id":self.user_id,
+                "name":self.user.name
+            }
+        }
+        if detailed:
+            data["user"]["email"] = self.user.email
+
+        return data

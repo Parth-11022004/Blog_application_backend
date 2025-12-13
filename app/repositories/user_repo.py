@@ -26,3 +26,9 @@ class UserRepository:
     def get_by_id(user_id: int):
         db = SessionLocal()
         return db.query(User).filter(User.id == user_id).first()
+    
+    @staticmethod
+    def delete(user: User):
+        db = SessionLocal()
+        db.delete(user)
+        db.commit()

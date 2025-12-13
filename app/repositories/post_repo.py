@@ -76,7 +76,7 @@ class PostRepository:
 
     @staticmethod
     def update(post: Post):
-        db = SessionLocal()
-        db.commit()
+        db = SessionLocal()    
         db.refresh(post)
+        db.commit()
         return post

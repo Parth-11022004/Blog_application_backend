@@ -6,6 +6,7 @@ from app.schemas.post import (
     PostUpdateSchema,
 )
 from app.services.post_service import PostService
+from app.repositories.category_repo import CategoryRepository
 from pydantic import ValidationError
 
 post_bp = Blueprint("post_bp", __name__)
@@ -21,9 +22,9 @@ def get_posts():
 @post_bp.get("/<int:post_id>")
 @jwt_required()
 def get_post(post_id):
-    post = PostService.get_post(post_id)
-    if not post:
-        return jsonify({"error": "Post not found"}), 404
+    post, error = PostService.get_post(post_id)
+    if error:
+        return jsonify({"error": error}), 404
     return jsonify(post), 200
 
 
@@ -33,13 +34,12 @@ def create_post():
     user_id = int(get_jwt_identity())
     try:
         data = PostCreateSchema.model_validate(request.get_json())
-        post = PostService.create_post(user_id, data)
-    except ValueError as e:
-        return jsonify({"error":e}), 404
     except ValidationError as e:
         return jsonify({"errors":e.errors()})
-    else:
-        return jsonify(post), 201
+    post, error = PostService.create_post(user_id, data)
+    if error:
+        return jsonify({"error":error}), 404
+    return jsonify(post), 201
 
 
 @post_bp.get("/my")
@@ -49,13 +49,15 @@ def my_posts():
     posts = PostService.get_user_posts(user_id)
     return jsonify(posts), 200
 
+
 @post_bp.get("/category/<int:category_id>")
 @jwt_required
 def get_posts_by_category(category_id):
+    if not CategoryRepository.get_by_id(category_id):
+        return jsonify({"error":"Category not found"}), 404 
     posts = PostService.get_by_category(category_id)
-    if not posts:
-        return jsonify({"error":"Category not found"}), 404
     return jsonify(posts), 200
+
 
 @post_bp.delete("/<int:post_id>")
 @jwt_required()
