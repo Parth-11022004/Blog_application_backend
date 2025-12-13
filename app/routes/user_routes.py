@@ -4,9 +4,9 @@ from app.schemas.user import UserLoginSchema, UserRegisterSchema
 from app.services.user_service import UserService
 from pydantic import ValidationError
 
-auth_bp = Blueprint("auth_bp", __name__)
+user_bp = Blueprint("user_bp", __name__)
 
-@auth_bp.post("/signup")
+@user_bp.post("/signup")
 def signup():
     try:
         data = UserRegisterSchema.model_validate(request.get_json())
@@ -19,7 +19,7 @@ def signup():
         return jsonify({"message": "User registered successfully", "user": user}), 201
 
 
-@auth_bp.post("/login")
+@user_bp.post("/login")
 def login():
     try:
         data = UserLoginSchema.model_validate(request.get_json())
@@ -31,7 +31,7 @@ def login():
     token = create_access_token(identity=str(user.id))
     return jsonify({"access_token": token}), 200
 
-@auth_bp.delete("/")
+@user_bp.delete("/")
 @jwt_required
 def delete_user(user_id):
     user_id = int(get_jwt_identity())

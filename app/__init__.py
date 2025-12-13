@@ -16,12 +16,12 @@ def create_app():
     # Base.metadata.create_all(bind=engine)
 
     # Register blueprints
-    from app.routes.auth_routes import auth_bp
+    from app.routes.user_routes import user_bp
     from app.routes.post_routes import post_bp
     from app.routes.comment_routes import comment_bp
     from app.routes.like_routes import like_bp
 
-    app.register_blueprint(auth_bp, url_prefix="/api/auth")
+    app.register_blueprint(user_bp, url_prefix="/api/auth")
     app.register_blueprint(post_bp, url_prefix="/api/posts")
     app.register_blueprint(comment_bp, url_prefix="/api/comments")
     app.register_blueprint(like_bp, url_prefix="/api/like")

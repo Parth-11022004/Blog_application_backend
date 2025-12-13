@@ -25,3 +25,9 @@ class LikeService:
             return False, "You have not liked this post"
 
         return True, None
+
+    @staticmethod
+    def get_like_count(post_id: int):
+        if not PostRepository.get_by_id(post_id):
+            return None, "Post not found"
+        return LikeRepository.like_count(post_id), None

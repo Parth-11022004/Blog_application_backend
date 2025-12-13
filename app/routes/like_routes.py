@@ -27,3 +27,12 @@ def unlike_post(post_id):
         return jsonify({"error": error}), 404
 
     return jsonify({"message": "Like removed"}), 200
+
+
+@like_bp.get("/post/<int:post_id>/count")
+@jwt_required()
+def get_like_count(post_id):
+    count, error = LikeService.get_like_count(post_id)
+    if error:
+        return jsonify({"error":error}), 404
+    return jsonify({"likes":count}), 200
