@@ -9,11 +9,13 @@ class PostService:
 
     @staticmethod
     def get_all_posts():
-        return PostRepository.get_all()
+        posts = PostRepository.get_all()
+        return [p.to_dict(detailed=False) for p in posts]
 
     @staticmethod
     def get_post(post_id: int):
-        return PostRepository.get_by_id(post_id)
+        post = PostRepository.get_by_id(post_id)
+        return post.to_dict(detailed=True) if post else None
 
     @staticmethod
     def create_post(user_id: int, data):
@@ -29,11 +31,19 @@ class PostService:
             user_id=user_id
         )
 
-        return PostRepository.create(post)
+        post = PostRepository.create(post)
+        return post.to_dict(detailed=True)
 
     @staticmethod
     def get_user_posts(user_id: int):
-        return PostRepository.get_user_posts(user_id)
+        posts = PostRepository.get_user_posts(user_id)
+        return [p.to_dict(detailed=False) for p in posts]
+    
+    def get_by_category(category_id: int):
+        posts = PostRepository.get_by_category(category_id)
+        if not posts:
+            return None
+        return [p.to_dict(detailed=False) for p in posts]
 
     @staticmethod
     def delete_post(post_id: int, user_id: int):
@@ -64,5 +74,5 @@ class PostService:
         post.body = data.body
         post.category_id = data.category_id
 
-        updated = PostRepository.update(post)
-        return updated, None
+        post = PostRepository.update(post)
+        return post.to_dict(detailed=True), None

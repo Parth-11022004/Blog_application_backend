@@ -13,7 +13,7 @@ class User(Base):
     password = Column(String(300), nullable=False)
 
     # relationships
-    posts = relationship("Post", back_populates="author", cascade="all, delete")
+    posts = relationship("Post", back_populates="user", cascade="all, delete")
     comments = relationship("Comment", back_populates="user", cascade="all, delete")
     likes = relationship("Like", back_populates="user", cascade="all, delete")
 

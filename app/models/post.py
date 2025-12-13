@@ -15,9 +15,28 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
     category_id = Column(Integer, ForeignKey("categories.id", ondelete="SET NULL", onupdate="CASCADE"), nullable=True)
 
-    # relationships
-    author = relationship("User", back_populates="posts")
+    user = relationship("User", back_populates="posts")
     category = relationship("Category", back_populates="posts")
     comments = relationship("Comment", back_populates="post", cascade="all, delete")
     likes = relationship("Like", back_populates="post", cascade="all, delete")
+
+    def to_dict(self, detailed=False):
+        data = {
+            "id": self.id,
+            "title": self.title,
+            "subtitle": self.subtitle,
+            "posted_at": self.posted_at,
+            "user_id": self.user_id,
+            "category_id": self.category_id,
+            "author": {
+                "name":self.user.name if self.user else None
+            },
+            "category": self.category.name if self.category else None
+        }
+
+        if detailed:
+            data["body"] = self.body
+            data["author"]["email"] = self.user.email if self.user else None
+
+        return data
 

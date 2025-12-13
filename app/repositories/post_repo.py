@@ -1,5 +1,6 @@
 from app.core.database import SessionLocal
 from app.models.post import Post
+from sqlalchemy.orm import joinedload
 
 
 class PostRepository:
@@ -7,17 +8,43 @@ class PostRepository:
     @staticmethod
     def get_all():
         db = SessionLocal()
-        return db.query(Post).all()
+        posts = (
+            db.query(Post)
+            .options(
+                joinedload(Post.user),
+                joinedload(Post.category)
+            )
+            .all()
+        )
+        return posts
 
     @staticmethod
     def get_by_id(post_id: int):
         db = SessionLocal()
-        return db.query(Post).filter(Post.id == post_id).first()
+        post = (
+            db.query(Post)
+            .options(
+                joinedload(Post.user),
+                joinedload(Post.category)
+            )
+            .filter(Post.id == post_id)
+            .first()
+        )
+        return post
 
     @staticmethod
     def get_user_posts(user_id: int):
         db = SessionLocal()
-        return db.query(Post).filter(Post.user_id == user_id).all()
+        posts = (
+            db.query(Post)
+            .options(
+                joinedload(Post.user),
+                joinedload(Post.category)
+            )
+            .filter(Post.user_id == user_id)
+            .all()
+        )
+        return posts
 
     @staticmethod
     def create(post: Post):
@@ -26,6 +53,20 @@ class PostRepository:
         db.commit()
         db.refresh(post)
         return post
+
+    @staticmethod
+    def get_by_category(category_id: int):
+        db = SessionLocal()
+        posts = (
+            db.query(Post)
+            .options(
+                joinedload(Post.user),
+                joinedload(Post.category)
+            )
+            .filter(Post.category_id == category_id)
+            .all()
+        )
+        return posts
 
     @staticmethod
     def delete(post: Post):

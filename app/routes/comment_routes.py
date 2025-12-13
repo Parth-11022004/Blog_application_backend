@@ -20,7 +20,7 @@ def all_comments():
 
 @comment_bp.get("/<int:comment_id>")
 @jwt_required()
-def all_comments(comment_id):
+def one_comment(comment_id):
     comment, error = CommentService.get_comment_by_id(comment_id)
     if error:
         return jsonify({"error":error}), 404
